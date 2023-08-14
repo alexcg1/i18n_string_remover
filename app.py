@@ -1,17 +1,20 @@
 import difflib
 import json
 import os
+import sys
 
 from git import Repo
 
-repo = 'scenex'
-commit_hash = '994a2efb'
-output_files = ['fr.json']
+# repo = 'BestBanner'
+# commit_hash = 'a23b2e5'
 
+repo = sys.argv[1]
+commit_hash = sys.argv[2]
 
 langs = ['de', 'es', 'fr', 'it', 'ja', 'ko', 'mn', 'ru', 'zh-CN', 'zh-TW']
-json_dir = './scenex/webapp/src/i18n/'
+json_dir = f'./{repo}/webapp/src/i18n/'
 json_filename = 'index.json'
+
 
 def get_changed_lines(repo: str, commit_hash: str):
     changed_lines = set()
@@ -30,9 +33,9 @@ def get_changed_lines(repo: str, commit_hash: str):
         a_lines = a_blob.split("\n")
         b_lines = b_blob.split("\n")
 
-        diff_lines = difflib.unified_diff(a_lines, b_lines, 
-                                          fromfile=diff.a_path, 
-                                          tofile=diff.b_path, 
+        diff_lines = difflib.unified_diff(a_lines, b_lines,
+                                          fromfile=diff.a_path,
+                                          tofile=diff.b_path,
                                           lineterm='')
 
         # print the lines that start with '-' or '+', excluding the header lines
@@ -49,7 +52,8 @@ def get_changed_lines(repo: str, commit_hash: str):
 
 # def delete_keys(files: list, keys: list, ignore: list = []):
 
-def delete_keys_from_json_file(keys: list, filename:list):
+
+def delete_keys_from_json_file(keys: list, filename: list):
     if not os.path.exists(filename):
         print(f"File {filename} does not exist.")
 
@@ -63,8 +67,6 @@ def delete_keys_from_json_file(keys: list, filename:list):
         f.seek(0)
         json.dump(data, f, indent=4)
         f.truncate()
-
-
 
 
 keys = get_changed_lines(repo=repo, commit_hash=commit_hash)
